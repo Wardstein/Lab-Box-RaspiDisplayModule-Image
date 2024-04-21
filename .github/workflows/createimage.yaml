@@ -1,12 +1,11 @@
 name: "Create Image"
 
-on:
-	workflow_dispatch:
-		inputs:
-			labbox-python-software-version:
-				description: "Lab-Box Python Software Version"
-				required: true
-				default: ''
+on: workflow_dispatch
+	inputs:
+		labbox-python-software-version:
+			description: "Lab-Box Python Software Version"
+			required: true
+			default: ''
 
 jobs:
 	build:
