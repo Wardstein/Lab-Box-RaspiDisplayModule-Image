@@ -1,0 +1,30 @@
+name: "Create Image"
+
+on:
+	workflow_dispatch:
+		inputs:
+			labbox-python-software-version:
+				description: "Lab-Box Python Software Version"
+				required: true
+				default: ''
+
+jobs:
+	build:
+		name: "Build Image"
+		runs-on: ubuntu-latest
+		steps:
+		- name: "⬇ Download RPi image"
+			id: download_rpi_image
+			run: |
+				mkdir -p build
+				cd build
+				wget https://downloads.raspberrypi.com/raspios_arm64/images/raspios_arm64-2024-03-15/2024-03-15-raspios-bookworm-arm64.img.xz -q -O input.img.xz
+				unxz -f input.img.xz
+
+		- name: "Run CustoPiZer"
+			uses: OctoPrint/CustoPiZer@1.2.0
+			with:
+				workspace: "${{ github.workspace }}/workspace"
+				scripts:  "${{ github.workspace }}/workspace/scripts"
+				config: "${{ github.workspace }}/config.local"
+				environment: '{ }'
