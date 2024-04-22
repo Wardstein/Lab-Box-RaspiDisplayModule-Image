@@ -19,10 +19,15 @@ usermod -a -G users,adm,dialout,audio,netdev,video,plugdev,cdrom,games,input,gpi
 
 
 # Make sure user doesn't require a password when running as sudo; https://github.com/Pioreactor/CustoPiZer/blob/pioreactor/workspace/scripts/01-make-pioreactor-user.sh
-echo '$RASPI_USER ALL=(ALL) NOPASSWD: ALL' | sudo EDITOR='tee -a' visudo -f /etc/sudoers.d/010_$RASPI_USER-nopasswd
+echo "$RASPI_USER ALL=(ALL) NOPASSWD: ALL" | sudo EDITOR='tee -a' visudo -f /etc/sudoers.d/010_$RASPI_USER-nopasswd
 
 
+# https://github.com/gitbls/sdm/blob/master/plugins/disables#L90
 systemctl disable triggerhappy.service 
+systemctl disable triggerhappy.socket
+[ -f /lib/udev/rules.d/60-triggerhappy.rules ] && mv /lib/udev/rules.d/60-triggerhappy.rules /lib/udev/rules.d/.60-triggerhappy-save.rules
+[ -f /usr/sbin/thd ] && mv /usr/sbin/thd /usr/sbin/thd.save
+
 systemctl disable dphys-swapfile.service
 systemctl disable userconfig.service
 apt purge -y piwiz
@@ -31,50 +36,53 @@ apt purge -y piwiz
 # https://forums.raspberrypi.com/viewtopic.php?p=2036168&sid=7e348ea4c90ad0c51def1eb973b20258#p2036168
 [ -f /etc/xdg/autostart/piwiz.desktop ] && mv /etc/xdg/autostart/piwiz.desktop /etc/xdg/autostart/.piwiz.desktop.save
 systemctl disable userconfig.service > /dev/null 2>&1
+systemctl mask    userconfig.service > /dev/null 2>&1
 [ "$(getent passwd rpi-first-boot-wizard)" != "" ] && userdel -r rpi-first-boot-wizard > /dev/null 2>&1
+[ -f /etc/systemd/system/getty@tty1.service.d/autologin.conf ] && mv /etc/systemd/system/getty@tty1.service.d/autologin.conf /etc/systemd/system/getty@tty1.service.d/.autologin.conf.save
 rm -f /etc/sudoers.d/010_wiz-nopasswd
 rm -f /etc/xdg/autostart/deluser.desktop
 
 
 # Create a one-time setup file
-rm -f /boot/firstrun.sh
+FIRSTBOOT_FILE="/firstboot.sh"
+rm -f $FIRSTBOOT_FILE
 
-echo -e "#!/bin/bash\n\nset -e\n\n" > /boot/firstrun.sh
+echo -e "#!/bin/bash\n\nset -e\n\n" > $FIRSTBOOT_FILE
 
 # Stolen from the Raspberry Pi Imager software
 ###echo $RASPI_HOSTNAME > /etc/hostname
 ###CURRENT_HOSTNAME=`cat /etc/hostname | tr -d \" \\t\\n\\r\"`
 ###sed -i \"s/127.0.1.1.*$CURRENT_HOSTNAME/127.0.1.1\\t"+$RASPI_HOSTNAME+"/g\" /etc/hosts
 #raspi-config nonint do_hostname $RASPI_HOSTNAME
-echo "raspi-config nonint do_hostname $RASPI_HOSTNAME" >> /boot/firstrun.sh
+echo "raspi-config nonint do_hostname $RASPI_HOSTNAME" >> $FIRSTBOOT_FILE
 
 # Enable SSH for login
 ###systemctl enable ssh
 #raspi-config nonint do_ssh 0
-echo "raspi-config nonint do_ssh 0" >> /boot/firstrun.sh
+echo "raspi-config nonint do_ssh 0" >> $FIRSTBOOT_FILE
 
 # Enable VNC server
 #raspi-config nonint do_vnc 0
-echo "raspi-config nonint do_vnc 0" >> /boot/firstrun.sh
+echo "raspi-config nonint do_vnc 0" >> $FIRSTBOOT_FILE
 
 # Boot to desktop, logging in automatically
 #raspi-config nonint do_boot_behaviour B4
-echo "raspi-config nonint do_boot_behaviour B4" >> /boot/firstrun.sh
+echo "raspi-config nonint do_boot_behaviour B4" >> $FIRSTBOOT_FILE
 
 # Disable screen blanking
 #raspi-config nonint do_blanking
-echo "raspi-config nonint do_blanking" >> /boot/firstrun.sh
+echo "raspi-config nonint do_blanking" >> $FIRSTBOOT_FILE
 
 # Enable predictable network interface names
 #raspi-config nonint do_net_names 0
-echo "raspi-config nonint do_net_names 0" >> /boot/firstrun.sh
+echo "raspi-config nonint do_net_names 0" >> $FIRSTBOOT_FILE
 
 # Hardware interfaces like SPI, I2C and Serial are already set in the config.txt file in a prior CustoPiZer step
 
-echo "sed -i 's| systemd.run.*||g' /boot/cmdline.txt" >> /boot/firstrun.sh
-echo "rm -f /boot/firstrun.sh" >> /boot/firstrun.sh
-echo "exit 0" >> /boot/firstrun.sh
+echo "sed -i 's| systemd.run.*||g' /boot/cmdline.txt" >> $FIRSTBOOT_FILE
+echo "rm -f $FIRSTBOOT_FILE" >> $FIRSTBOOT_FILE
+echo "exit 0" >> $FIRSTBOOT_FILE
 
-cat /boot/firstrun.sh
-echo -n " systemd.run=/boot/firstrun.sh systemd.run_success_action=reboot systemd.unit=kernel-command-line.target">>/boot/cmdline.txt
+cat $FIRSTBOOT_FILE
+echo -n " systemd.run=$FIRSTBOOT_FILE systemd.run_success_action=reboot systemd.unit=kernel-command-line.target">>/boot/cmdline.txt
 cat /boot/cmdline.txt
