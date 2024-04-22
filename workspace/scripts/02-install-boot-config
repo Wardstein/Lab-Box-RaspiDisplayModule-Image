@@ -10,29 +10,27 @@ install_cleanup_trap
 
 # CustoPiZer: If you need to make additional files available inside the image during build, place them inside scripts/files -- they will be mounted inside the image build under /files
 
+
 # To enable all the hardware like SPI, I2C, Serial and set the HDMI resolution, we copy our custom config.txt into the image. This way nobody has to deal with the 'raspi-config' tool later
 
 
-ls /
-if [ -d /boot ]; then
-	echo "/boot exists."
-	ls /boot
-fi
+# Despite the config.txt and cmdline.txt are moved into /boot/firmware folders, we write to the /boot folder directly.
+# The files from the boot folder are automatically moved into the /boot/firmware folder on first start (at time of writing 22.04.2024)
+# https://github.com/raspberrypi/documentation/issues/3089
+export OUTPUT_FILE = "/boot/config.txt"
+# If the /boot/firmware folder should exist in the future, this should then set the correct path in the future
 if [ -d /boot/firmware ]; then
-	echo "/boot/firmware exists."
-	ls /boot/firmware
+	export OUTPUT_FILE = "/boot/firmware/config.txt"
 fi
 
-if [ ! -d "/path/to/dir" ]; then
-	echo "Creating directory: /boot/firmware"
-	mkdir /boot/firmware
-fi
 
 echo_green "Using image width: \"$IMAGE_BITWIDTH\""
+echo_green "Writing config.txt to \"$OUTPUT_FILE\""
 if [ "$IMAGE_BITWIDTH" == "32" ]; then
-	cp /files/RasPi_boot_config_txt/boot-firmware-config.txt-debian-12-bookworm_32bit.txt /boot/firmware/config.txt
+	cp /files/RasPi_boot_config_txt/boot-firmware-config.txt-debian-12-bookworm_32bit.txt $OUTPUT_FILE
 elif [ "$IMAGE_BITWIDTH" == "64" ]; then
-	cp /files/RasPi_boot_config_txt/boot-firmware-config.txt-debian-12-bookworm_64bit.txt /boot/firmware/config.txt
+	cp /files/RasPi_boot_config_txt/boot-firmware-config.txt-debian-12-bookworm_64bit.txt $OUTPUT_FILE
 else
+	echo_red "UNKNOWN IMAGE_BITWIDTH VALUE: \"$IMAGE_BITWIDTH\""
 	exit 1
 fi

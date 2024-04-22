@@ -57,3 +57,4 @@ otg_mode=1
 
 [all]
 enable_uart=1
+disable_splash=1
