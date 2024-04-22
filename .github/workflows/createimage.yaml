@@ -15,8 +15,8 @@ jobs:
     steps:
     - name: "Checkout Repo"
       uses: actions/checkout@v3
-    
-    - name: "⬇ Download RPi image"
+
+    - name: "Download RPi image"
       id: download_rpi_image
       run: |
         ls
@@ -37,21 +37,6 @@ jobs:
         config: "${{ github.workspace }}/config.local"
         environment: '{ }'
 
-    - name: "Rename image LW"
-      run: |
-        IMAGE_NAME="lab-box_raspi_touch_display_module_image.img"
-        echo "IMAGE_NAME=$IMAGE_NAME" >> $GITHUB_ENV
-        IMAGE_NAME_ZIP="lab-box_raspi_touch_display_module_image.img.xz"
-        echo "IMAGE_NAME_ZIP=$IMAGE_NAME_ZIP" >> $GITHUB_ENV
-        cd build
-        mv output.img $IMAGE_NAME
-        
-    - name: "Package the image"
-      id: package-image
-      uses: OctoPrint/actions/package-rpi-image@main
-      with:
-        image_path: "build/${{ env.IMAGE_NAME }}"
-        
     - name: "Prepare release"
       run: |        
         # release body
@@ -63,6 +48,21 @@ jobs:
 
         <!-- mark:untested -->
         EOF
+        
+    - name: "Rename image LW"
+      run: |
+        IMAGE_NAME="lab-box_raspi_touch_display_module_image.img"
+        echo "IMAGE_NAME=$IMAGE_NAME" >> $GITHUB_ENV
+        IMAGE_NAME_ZIP="lab-box_raspi_touch_display_module_image.zip"
+        echo "IMAGE_NAME_ZIP=$IMAGE_NAME_ZIP" >> $GITHUB_ENV
+        cd build
+        mv output.img $IMAGE_NAME
+        
+    - name: "Package the image"
+      id: package-image
+      uses: OctoPrint/actions/package-rpi-image@main
+      with:
+        image_path: "build/${{ env.IMAGE_NAME }}"
 
     - name: "Create release & attach assets"
       uses: softprops/action-gh-release@v1
