@@ -1,0 +1,48 @@
+set -x
+set -e
+
+export LC_ALL=C
+
+source /common.sh
+install_cleanup_trap
+
+# Scripts run as root by default
+
+# raspi-config cli documentation
+# https://www.raspberrypi.com/documentation/computers/configuration.html#raspi-config-cli
+
+
+# Stolen from the Raspberry Pi Imager software
+###echo $RASPI_HOSTNAME > /etc/hostname
+###CURRENT_HOSTNAME=`cat /etc/hostname | tr -d \" \\t\\n\\r\"`
+###sed -i \"s/127.0.1.1.*$CURRENT_HOSTNAME/127.0.1.1\\t"+$RASPI_HOSTNAME+"/g\" /etc/hosts
+raspi-config nonint do_hostname $RASPI_HOSTNAME
+
+
+# Add the default user
+adduser --gecos "" $RASPI_USER
+chpasswd <<<"$RASPI_USER:$RASPI_PASSWORD"
+adduser $RASPI_USER users,adm,dialout,audio,netdev,video,plugdev,cdrom,games,input,gpio,spi,i2c,render,sudo
+
+
+# Make sure user doesn't require a password when running as sudo; https://github.com/Pioreactor/CustoPiZer/blob/pioreactor/workspace/scripts/01-make-pioreactor-user.sh
+echo '$RASPI_USER ALL=(ALL) NOPASSWD: ALL' | sudo EDITOR='tee -a' visudo -f /etc/sudoers.d/010_$RASPI_USER-nopasswd
+
+
+# Enable SSH for login
+###systemctl enable ssh
+raspi-config nonint do_ssh 0
+
+# Enable VNC server
+raspi-config nonint do_vnc 0
+
+# Boot to desktop, logging in automatically
+raspi-config nonint do_boot_behaviour B4
+
+# Disable screen blanking
+raspi-config nonint do_blanking
+
+# Enable predictable network interface names
+raspi-config nonint do_net_names 0
+
+# Hardware interfaces like SPI, I2C and Serial are already set in the config.txt file in a prior CustoPiZer step
