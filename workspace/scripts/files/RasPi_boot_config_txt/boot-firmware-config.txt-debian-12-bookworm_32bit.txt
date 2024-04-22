@@ -23,7 +23,7 @@ display_auto_detect=0
 auto_initramfs=1
 
 # Enable DRM VC4 V3D driver
-dtoverlay=vc4-fkms-v3d
+dtoverlay=vc4-kms-v3d
 max_framebuffers=2
 
 # Don't have the firmware create an initial video= setting in cmdline.txt.
@@ -55,3 +55,7 @@ otg_mode=1
 [all]
 enable_uart=1
 disable_splash=1
+# We don't use HATs and official RasPi Dislay&Touch here, so switch the detection off
+force_eeprom_read=0
+ignore_lcd=1
+disable_touchscreen=1
