@@ -62,5 +62,5 @@ echo "rm -f /boot/firstrun.sh" >> /boot/firstrun.sh
 echo "exit 0" >> /boot/firstrun.sh
 
 cat /boot/firstrun.sh
-echo -n " systemd.run=/boot/firstrun.sh systemd.run_success_action=reboot systemd.unit=kernel-command-line.target">>/boot/cmdline.txt
+echo " systemd.run=/boot/firstrun.sh systemd.run_success_action=reboot systemd.unit=kernel-command-line.target">>/boot/cmdline.txt
 cat /boot/cmdline.txt
