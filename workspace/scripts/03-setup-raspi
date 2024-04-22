@@ -12,13 +12,6 @@ install_cleanup_trap
 # https://www.raspberrypi.com/documentation/computers/configuration.html#raspi-config-cli
 
 
-# Stolen from the Raspberry Pi Imager software
-###echo $RASPI_HOSTNAME > /etc/hostname
-###CURRENT_HOSTNAME=`cat /etc/hostname | tr -d \" \\t\\n\\r\"`
-###sed -i \"s/127.0.1.1.*$CURRENT_HOSTNAME/127.0.1.1\\t"+$RASPI_HOSTNAME+"/g\" /etc/hosts
-raspi-config nonint do_hostname $RASPI_HOSTNAME
-
-
 # Add the default user
 adduser --gecos "" $RASPI_USER
 chpasswd <<<"$RASPI_USER:$RASPI_PASSWORD"
@@ -29,20 +22,45 @@ usermod -a -G users,adm,dialout,audio,netdev,video,plugdev,cdrom,games,input,gpi
 echo '$RASPI_USER ALL=(ALL) NOPASSWD: ALL' | sudo EDITOR='tee -a' visudo -f /etc/sudoers.d/010_$RASPI_USER-nopasswd
 
 
+# Create a one-time setup file
+rm -f /boot/firstrun.sh
+
+echo -e "#!/bin/bash\n\n"+"set +e\n\n" > /boot/firstrun.sh
+
+# Stolen from the Raspberry Pi Imager software
+###echo $RASPI_HOSTNAME > /etc/hostname
+###CURRENT_HOSTNAME=`cat /etc/hostname | tr -d \" \\t\\n\\r\"`
+###sed -i \"s/127.0.1.1.*$CURRENT_HOSTNAME/127.0.1.1\\t"+$RASPI_HOSTNAME+"/g\" /etc/hosts
+#raspi-config nonint do_hostname $RASPI_HOSTNAME
+echo "raspi-config nonint do_hostname $RASPI_HOSTNAME" >> /boot/firstrun.sh
+
 # Enable SSH for login
 ###systemctl enable ssh
-raspi-config nonint do_ssh 0
+#raspi-config nonint do_ssh 0
+echo "raspi-config nonint do_ssh 0" >> /boot/firstrun.sh
 
 # Enable VNC server
-raspi-config nonint do_vnc 0
+#raspi-config nonint do_vnc 0
+echo "raspi-config nonint do_vnc 0" >> /boot/firstrun.sh
 
 # Boot to desktop, logging in automatically
-raspi-config nonint do_boot_behaviour B4
+#raspi-config nonint do_boot_behaviour B4
+echo "raspi-config nonint do_boot_behaviour B4" >> /boot/firstrun.sh
 
 # Disable screen blanking
-raspi-config nonint do_blanking
+#raspi-config nonint do_blanking
+echo "raspi-config nonint do_blanking" >> /boot/firstrun.sh
 
 # Enable predictable network interface names
-raspi-config nonint do_net_names 0
+#raspi-config nonint do_net_names 0
+echo "raspi-config nonint do_net_names 0" >> /boot/firstrun.sh
 
 # Hardware interfaces like SPI, I2C and Serial are already set in the config.txt file in a prior CustoPiZer step
+
+echo "rm -f /boot/firstrun.sh" >> /boot/firstrun.sh
+echo "sed -i 's| systemd.run.*||g' /boot/cmdline.txt" >> /boot/firstrun.sh
+echo "exit 0" >> /boot/firstrun.sh
+
+cat /boot/firstrun.sh
+echo -n " systemd.run=/boot/firstrun.sh systemd.run_success_action=reboot systemd.unit=kernel-command-line.target" | sudo tee -a /boot/cmdline.txt
+cat /boot/cmdline.txt
