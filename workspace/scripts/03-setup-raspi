@@ -27,6 +27,14 @@ systemctl disable dphys-swapfile.service
 systemctl disable userconfig.service
 apt purge -y piwiz
 
+# Just unistalling pywiz does not solve the startup. We boot into "rpi-first-boot-wizard" user
+# https://forums.raspberrypi.com/viewtopic.php?p=2036168&sid=7e348ea4c90ad0c51def1eb973b20258#p2036168
+[ -f /etc/xdg/autostart/piwiz.desktop ] && mv /etc/xdg/autostart/piwiz.desktop /etc/xdg/autostart/.piwiz.desktop.save
+systemctl disable userconfig.service > /dev/null 2>&1
+[ "$(getent passwd rpi-first-boot-wizard)" != "" ] && userdel -r rpi-first-boot-wizard > /dev/null 2>&1
+rm -f /etc/sudoers.d/010_wiz-nopasswd
+rm -f /etc/xdg/autostart/deluser.desktop
+
 
 # Create a one-time setup file
 rm -f /boot/firstrun.sh
