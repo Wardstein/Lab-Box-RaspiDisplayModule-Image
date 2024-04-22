@@ -12,10 +12,11 @@ install_cleanup_trap
 
 # To enable all the hardware like SPI, I2C, Serial and set the HDMI resolution, we copy our custom config.txt into the image. This way nobody has to deal with the 'raspi-config' tool later
 
-if [ $IMAGE_BITWIDTH == "32" ]
+echo_green "Using image width: \"$IMAGE_BITWIDTH\""
+if [ "$IMAGE_BITWIDTH" == "32" ]
 then
 	cp /files/RasPi_boot_config_txt/boot-firmware-config.txt-debian-12-bookworm_32bit.txt /boot/firmware/config.txt
-elif [ $IMAGE_BITWIDTH == "64" ]
+elif [ "$IMAGE_BITWIDTH" == "64" ]
 then
 	cp /files/RasPi_boot_config_txt/boot-firmware-config.txt-debian-12-bookworm_64bit.txt /boot/firmware/config.txt
 else
