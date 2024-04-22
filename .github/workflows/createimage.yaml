@@ -33,11 +33,12 @@ jobs:
       run: |
         mkdir build
         cd build
-        if [ ${{ env.IMAGE_BITWIDTH }} == "32" ]
+        echo "Using image width: \"${{ env.IMAGE_BITWIDTH }}\""
+        if [ "${{ env.IMAGE_BITWIDTH }}" == "32" ]
         then
             # Download 32bit image
             wget https://downloads.raspberrypi.com/raspios_armhf/images/raspios_armhf-2024-03-15/2024-03-15-raspios-bookworm-armhf.img.xz -q -O input.img.xz
-        elif [ ${{ env.IMAGE_BITWIDTH }} == "64" ] 
+        elif [ "${{ env.IMAGE_BITWIDTH }}" == "64" ] 
         then
             # TODO: 64 BIT IMAGE MAKES PROBLEMS WITH CustoPiZer/chroot IN THE GITHUB RUNNER. NEED TO INVESTIGATE
             # wget https://downloads.raspberrypi.com/raspios_arm64/images/raspios_arm64-2024-03-15/2024-03-15-raspios-bookworm-arm64.img.xz -q -O input.img.xz
@@ -54,7 +55,7 @@ jobs:
         workspace: "${{ github.workspace }}/build"
         scripts:  "${{ github.workspace }}/workspace/scripts"
         config: "${{ github.workspace }}/config.local"
-        environment: '{ }'
+        environment: '{ "IMAGE_BITWIDTH": "${{ env.IMAGE_BITWIDTH }}" }'
 
 
     - name: "Prepare release"
