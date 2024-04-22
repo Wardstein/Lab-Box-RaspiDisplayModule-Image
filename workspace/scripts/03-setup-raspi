@@ -25,7 +25,7 @@ echo '$RASPI_USER ALL=(ALL) NOPASSWD: ALL' | sudo EDITOR='tee -a' visudo -f /etc
 systemctl disable triggerhappy.service 
 systemctl disable dphys-swapfile.service
 systemctl disable userconfig.service
-apt purge piwiz
+apt purge -y piwiz
 
 
 # Create a one-time setup file
