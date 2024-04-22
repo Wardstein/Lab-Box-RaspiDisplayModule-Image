@@ -3,10 +3,20 @@ name: "Create Image"
 on: 
   workflow_dispatch:
     inputs:
+      # MAXIMUM 10 PARAMETERS POSSIBLE
       labbox-python-software-version:
         description: "Lab-Box Python Software Version"
         required: true
         default: ''
+      default-user:
+        description: "Raspberry Pi User"
+        required: true
+        default: 'lab-box'
+      default-password:
+        description: "Raspberry Pi Password"
+        required: true
+        default: 'lab-box-raspi'
+      
 
 jobs:
   build:
@@ -55,7 +65,7 @@ jobs:
         workspace: "${{ github.workspace }}/build"
         scripts:  "${{ github.workspace }}/workspace/scripts"
         config: "${{ github.workspace }}/config.local"
-        environment: '{ "IMAGE_BITWIDTH": "${{ env.IMAGE_BITWIDTH }}" }'
+        environment: '{ "IMAGE_BITWIDTH": "${{ env.IMAGE_BITWIDTH }}", "RASPI_HOSTNAME": "lab-box", "RASPI_USER": "${{ github.event.inputs.default-user }}", "RASPI_PASSWORD": "${{ github.event.inputs.default-password }}" }'
 
 
     - name: "Prepare release"
