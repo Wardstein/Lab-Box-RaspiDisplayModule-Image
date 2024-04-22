@@ -16,18 +16,37 @@ jobs:
     - name: "Checkout Repo"
       uses: actions/checkout@v3
 
+
+    - name: "Setup Environment"
+      run: |
+        # Source settings
+        IMAGE_BITWIDTH="32"     # Also used in the CustoPiZer scripts; Value can either be "32" or "64"
+        echo "IMAGE_BITWIDTH=$IMAGE_BITWIDTH" >> $GITHUB_ENV
+        # Build image name (to rename and zip)
+        IMAGE_NAME="lab-box_raspi_touch_display_module_image.img"
+        echo "IMAGE_NAME=$IMAGE_NAME" >> $GITHUB_ENV
+        IMAGE_NAME_ZIP="lab-box_raspi_touch_display_module_image.zip"
+        echo "IMAGE_NAME_ZIP=$IMAGE_NAME_ZIP" >> $GITHUB_ENV
+
     - name: "Download RPi image"
       id: download_rpi_image
       run: |
-        ls
         mkdir build
         cd build
-        # TODO: 64 BIT IMAGE MAKES PROBLEM WITH CustoPiZer/chroot IN THE GITHUB RUNNER. NEED TO INVESTIGATE
-        # wget https://downloads.raspberrypi.com/raspios_arm64/images/raspios_arm64-2024-03-15/2024-03-15-raspios-bookworm-arm64.img.xz -q -O input.img.xz
-        # Download 32bit image
-        wget https://downloads.raspberrypi.com/raspios_armhf/images/raspios_armhf-2024-03-15/2024-03-15-raspios-bookworm-armhf.img.xz -q -O input.img.xz
+        if [ ${{ env.IMAGE_BITWIDTH }} == "32" ]
+        then
+            # Download 32bit image
+            wget https://downloads.raspberrypi.com/raspios_armhf/images/raspios_armhf-2024-03-15/2024-03-15-raspios-bookworm-armhf.img.xz -q -O input.img.xz
+        elif [ ${{ env.IMAGE_BITWIDTH }} == "64" ] 
+        then
+            # TODO: 64 BIT IMAGE MAKES PROBLEMS WITH CustoPiZer/chroot IN THE GITHUB RUNNER. NEED TO INVESTIGATE
+            # wget https://downloads.raspberrypi.com/raspios_arm64/images/raspios_arm64-2024-03-15/2024-03-15-raspios-bookworm-arm64.img.xz -q -O input.img.xz
+            exit 1
+        else
+            exit 1
+        fi
         unxz -f input.img.xz
-        ls
+
 
     - name: "Run CustoPiZer"
       uses: OctoPrint/CustoPiZer@1.2.0
@@ -36,6 +55,7 @@ jobs:
         scripts:  "${{ github.workspace }}/workspace/scripts"
         config: "${{ github.workspace }}/config.local"
         environment: '{ }'
+
 
     - name: "Prepare release"
       run: |        
@@ -49,14 +69,10 @@ jobs:
         <!-- mark:untested -->
         EOF
         
-    - name: "Rename image LW"
-      run: |
-        IMAGE_NAME="lab-box_raspi_touch_display_module_image.img"
-        echo "IMAGE_NAME=$IMAGE_NAME" >> $GITHUB_ENV
-        IMAGE_NAME_ZIP="lab-box_raspi_touch_display_module_image.zip"
-        echo "IMAGE_NAME_ZIP=$IMAGE_NAME_ZIP" >> $GITHUB_ENV
+        # Rename the image
         cd build
-        mv output.img $IMAGE_NAME
+        mv output.img ${{ env.IMAGE_NAME }}
+
 
     # https://github.com/OctoPrint/actions/tree/main/package-rpi-image
     - name: "Package the image"
@@ -64,6 +80,7 @@ jobs:
       uses: OctoPrint/actions/package-rpi-image@main
       with:
         image_path: "build/${{ env.IMAGE_NAME }}"
+
 
     # https://github.com/softprops/action-gh-release
     # Needs "Workflow permissions" in Repo->Settings->Actions->Genernal set to "Read and write permissions"

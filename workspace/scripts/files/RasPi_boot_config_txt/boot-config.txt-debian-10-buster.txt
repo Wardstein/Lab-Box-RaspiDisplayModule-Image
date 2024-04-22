@@ -1,0 +1,29 @@
+# Listed in here are only the UNCOMMENTED lines from the used /boot/config.txt file
+# this file was used on a RasPi 3B+
+
+
+ACTIONS:
+- COMMENT OUT disable_overscan=1
+- COMMENT OUT hdmi_force_hotplug=1
+
+
+## TIMING OVERRIDES
+overscan_left=0
+overscan_right=0
+overscan_top=0
+overscan_bottom=0
+framebuffer_width=480
+framebuffer_height=272
+hdmi_ignore_edid=0xa5000080
+hdmi_group=2
+hdmi_mode=87
+hdmi_timings=480 0 1 41 2 272 0 2 10 2 0 0 0 60 0 9009000 3
+
+dtparam=i2c_arm=on,i2c_arm_baudrate=400000
+dtparam=spi=on
+dtparam=audio=on
+
+[all]
+dtoverlay=vc4-fkms-v3d
+gpu_mem=128
+enable_uart=1
