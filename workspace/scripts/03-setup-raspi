@@ -25,7 +25,7 @@ echo '$RASPI_USER ALL=(ALL) NOPASSWD: ALL' | sudo EDITOR='tee -a' visudo -f /etc
 # Create a one-time setup file
 rm -f /boot/firstrun.sh
 
-echo -e "#!/bin/bash\n\n"+"set +e\n\n" > /boot/firstrun.sh
+echo -e "#!/bin/bash\n\nset -e\n\n" > /boot/firstrun.sh
 
 # Stolen from the Raspberry Pi Imager software
 ###echo $RASPI_HOSTNAME > /etc/hostname
@@ -57,10 +57,10 @@ echo "raspi-config nonint do_net_names 0" >> /boot/firstrun.sh
 
 # Hardware interfaces like SPI, I2C and Serial are already set in the config.txt file in a prior CustoPiZer step
 
-echo "rm -f /boot/firstrun.sh" >> /boot/firstrun.sh
 echo "sed -i 's| systemd.run.*||g' /boot/cmdline.txt" >> /boot/firstrun.sh
+echo "rm -f /boot/firstrun.sh" >> /boot/firstrun.sh
 echo "exit 0" >> /boot/firstrun.sh
 
 cat /boot/firstrun.sh
-echo -n " systemd.run=/boot/firstrun.sh systemd.run_success_action=reboot systemd.unit=kernel-command-line.target" | sudo tee -a /boot/cmdline.txt
+echo -n " systemd.run=/boot/firstrun.sh systemd.run_success_action=reboot systemd.unit=kernel-command-line.target" >> /boot/cmdline.txt
 cat /boot/cmdline.txt
