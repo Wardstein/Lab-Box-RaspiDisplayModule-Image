@@ -22,6 +22,12 @@ usermod -a -G users,adm,dialout,audio,netdev,video,plugdev,cdrom,games,input,gpi
 echo '$RASPI_USER ALL=(ALL) NOPASSWD: ALL' | sudo EDITOR='tee -a' visudo -f /etc/sudoers.d/010_$RASPI_USER-nopasswd
 
 
+systemctl disable triggerhappy.service 
+systemctl disable dphys-swapfile.service
+systemctl disable userconfig.service
+apt purge piwiz
+
+
 # Create a one-time setup file
 rm -f /boot/firstrun.sh
 
@@ -62,5 +68,5 @@ echo "rm -f /boot/firstrun.sh" >> /boot/firstrun.sh
 echo "exit 0" >> /boot/firstrun.sh
 
 cat /boot/firstrun.sh
-echo " systemd.run=/boot/firstrun.sh systemd.run_success_action=reboot systemd.unit=kernel-command-line.target">>/boot/cmdline.txt
+echo -n " systemd.run=/boot/firstrun.sh systemd.run_success_action=reboot systemd.unit=kernel-command-line.target">>/boot/cmdline.txt
 cat /boot/cmdline.txt
