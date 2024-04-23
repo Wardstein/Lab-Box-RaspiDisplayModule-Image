@@ -16,5 +16,9 @@ plymouth-set-default-theme --rebuild-initrd pix
 # https://scribles.net/customizing-boot-up-screen-on-raspberry-pi/
 # "Replace “console=tty1” with “console=tty3”. This redirects boot messages to tty3."
 sed -i 's/console=tty1/console=tty3/g' /boot/cmdline.txt
+# First replace a possible new line character at the end of the line, then append our new stuff
+sudo sed -i ':a;N;$!ba;s/\n/ /g' cmdline.txt
 echo -n " logo.nologo vt.global_cursor_default=0">>/boot/cmdline.txt
 cat /boot/cmdline.txt
+
+update-initramfs -u

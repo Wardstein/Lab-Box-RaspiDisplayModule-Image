@@ -110,7 +110,9 @@ echo "exit 0" >> $FIRSTBOOT_FILE
 chmod +x $FIRSTBOOT_FILE
 
 cat $FIRSTBOOT_FILE
-echo " systemd.run=$FIRSTBOOT_FILE systemd.run_success_action=reboot systemd.unit=kernel-command-line.target">>/boot/cmdline.txt
+# First replace a possible new line character at the end of the line, then append our new stuff
+sudo sed -i ':a;N;$!ba;s/\n/ /g' cmdline.txt
+echo -n " systemd.run=$FIRSTBOOT_FILE systemd.run_success_action=reboot systemd.unit=kernel-command-line.target">>/boot/cmdline.txt
 cat /boot/cmdline.txt
 
 
