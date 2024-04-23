@@ -21,4 +21,6 @@ sed -i ':a;N;$!ba;s/\n/ /g' /boot/cmdline.txt
 echo -n " logo.nologo vt.global_cursor_default=0">>/boot/cmdline.txt
 cat /boot/cmdline.txt
 
+# This is the ultimate step for Bookworm, otherwise all the above has no effect!
+# Thanks to here: https://forums.raspberrypi.com/viewtopic.php?p=2195808#p2195808
 update-initramfs -u

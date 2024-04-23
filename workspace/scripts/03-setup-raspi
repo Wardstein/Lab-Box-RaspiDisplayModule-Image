@@ -18,17 +18,9 @@ chpasswd <<<"$RASPI_USER:$RASPI_PASSWORD"
 usermod -a -G users,adm,dialout,audio,netdev,video,plugdev,cdrom,games,input,gpio,spi,i2c,render,sudo $RASPI_USER
 # Show a control output which groups the user is in
 groups $RASPI_USER
-# Test
-cd /home/$RASPI_USER
-ls
-rm -rf Documents
-# rm -rf Downloads		# Could be interesting for Webbrowser or downloads in Lab-Box
-rm -rf Music
-rm -rf Public
-rm -rf Pictures
-rm -rf Templates
-rm -rf Videos
-ls
+
+# Remove SSH pre-authentication banner
+rm -f /etc/ssh/sshd_config.d/rename_user.conf
 
 
 # Make sure user doesn't require a password when running as sudo; https://github.com/Pioreactor/CustoPiZer/blob/pioreactor/workspace/scripts/01-make-pioreactor-user.sh
@@ -65,8 +57,8 @@ echo -e "#!/bin/bash\n\nset -e\n\n" > $FIRSTBOOT_FILE
 # https://serverfault.com/a/103569
 echo "exec 3>&1 4>&2" >> $FIRSTBOOT_FILE
 echo "trap 'exec 2>&4 1>&3' 0 1 2 3" >> $FIRSTBOOT_FILE
-echo "exec 1>log.out 2>&1" >> $FIRSTBOOT_FILE
-echo -e"# Everything below will go to the file 'log.out':\n" >> $FIRSTBOOT_FILE
+echo "exec 1>/var/log/firstboot.log 2>&1" >> $FIRSTBOOT_FILE
+echo -e "# Everything below will go to the file '/var/log/firstboot.log':\n\n" >> $FIRSTBOOT_FILE
 
 # Stolen from the Raspberry Pi Imager software
 ###echo $RASPI_HOSTNAME > /etc/hostname
@@ -112,7 +104,7 @@ chmod +x $FIRSTBOOT_FILE
 cat $FIRSTBOOT_FILE
 # First replace a possible new line character at the end of the line, then append our new stuff
 sed -i ':a;N;$!ba;s/\n/ /g' /boot/cmdline.txt
-echo -n " systemd.run=$FIRSTBOOT_FILE systemd.run_success_action=reboot systemd.unit=kernel-command-line.target">>/boot/cmdline.txt
+echo -n " systemd.run=$FIRSTBOOT_FILE systemd.run_success_action=reboot systemd.unit=kernel-command-line.target" >> /boot/cmdline.txt
 cat /boot/cmdline.txt
 
 
