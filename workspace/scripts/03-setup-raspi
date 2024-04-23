@@ -13,10 +13,11 @@ install_cleanup_trap
 
 
 # Add the default user
-adduser --gecos "" $RASPI_USER
+adduser --gecos "" --disabled-password $RASPI_USER
 chpasswd <<<"$RASPI_USER:$RASPI_PASSWORD"
 usermod -a -G users,adm,dialout,audio,netdev,video,plugdev,cdrom,games,input,gpio,spi,i2c,render,sudo $RASPI_USER
-
+# Show a control output which groups the user is in
+groups $RASPI_USER
 
 # Make sure user doesn't require a password when running as sudo; https://github.com/Pioreactor/CustoPiZer/blob/pioreactor/workspace/scripts/01-make-pioreactor-user.sh
 echo "$RASPI_USER ALL=(ALL) NOPASSWD: ALL" | sudo EDITOR='tee -a' visudo -f /etc/sudoers.d/010_$RASPI_USER-nopasswd
@@ -67,7 +68,8 @@ echo "raspi-config nonint do_vnc 0" >> $FIRSTBOOT_FILE
 
 # Boot to desktop, logging in automatically
 #raspi-config nonint do_boot_behaviour B4
-echo "raspi-config nonint do_boot_behaviour B4" >> $FIRSTBOOT_FILE
+# DOES NOT SEEM TO WORK AS IT CANNOT FIGURE OUT THE USER, SEE SOLUTION ON BOTTOM
+#echo "raspi-config nonint do_boot_behaviour B4" >> $FIRSTBOOT_FILE
 
 # Disable screen blanking
 #raspi-config nonint do_blanking
@@ -86,3 +88,16 @@ echo "exit 0" >> $FIRSTBOOT_FILE
 cat $FIRSTBOOT_FILE
 echo -n " systemd.run=$FIRSTBOOT_FILE systemd.run_success_action=reboot systemd.unit=kernel-command-line.target">>/boot/cmdline.txt
 cat /boot/cmdline.txt
+
+
+
+# ENABLE AUTOLOGIN, FIX FROM raspi-config LINE ABOVE
+# Stolen from the raspi-config tool: https://github.com/RPi-Distro/raspi-config/blob/bookworm/raspi-config#L1686; Same also mentioned here: https://raspberrypi.stackexchange.com/a/136099
+sed /etc/lightdm/lightdm.conf -i -e "s/^\(#\|\)autologin-user=.*/autologin-user=$RASPI_USER/"
+cat > /etc/systemd/system/getty@tty1.service.d/autologin.conf << EOF
+[Service]
+ExecStart=
+ExecStart=-/sbin/agetty --autologin $RASPI_USER --noclear %I \$TERM
+EOF
+
+systemctl daemon-reload
