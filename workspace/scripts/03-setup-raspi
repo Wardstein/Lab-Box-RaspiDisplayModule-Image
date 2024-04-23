@@ -18,6 +18,18 @@ chpasswd <<<"$RASPI_USER:$RASPI_PASSWORD"
 usermod -a -G users,adm,dialout,audio,netdev,video,plugdev,cdrom,games,input,gpio,spi,i2c,render,sudo $RASPI_USER
 # Show a control output which groups the user is in
 groups $RASPI_USER
+# Test
+cd /home/$RASPI_USER
+ls
+rm -rf Documents
+# rm -rf Downloads		# Could be interesting for Webbrowser or downloads in Lab-Box
+rm -rf Music
+rm -rf Public
+rm -rf Pictures
+rm -rf Templates
+rm -rf Videos
+ls
+
 
 # Make sure user doesn't require a password when running as sudo; https://github.com/Pioreactor/CustoPiZer/blob/pioreactor/workspace/scripts/01-make-pioreactor-user.sh
 echo "$RASPI_USER ALL=(ALL) NOPASSWD: ALL" | sudo EDITOR='tee -a' visudo -f /etc/sudoers.d/010_$RASPI_USER-nopasswd

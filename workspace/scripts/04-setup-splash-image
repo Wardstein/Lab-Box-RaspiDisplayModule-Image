@@ -14,7 +14,7 @@ cp /files/Lab-Box_Logo.png /usr/share/plymouth/themes/pix/splash.png
 plymouth-set-default-theme --rebuild-initrd pix
 
 # https://scribles.net/customizing-boot-up-screen-on-raspberry-pi/
-# TODO: "Replace “console=tty1” with “console=tty3”. This redirects boot messages to tty3."
-# Currently still tty1, maybe can be done with "sed"?
+# "Replace “console=tty1” with “console=tty3”. This redirects boot messages to tty3."
+sed -i 's/console=tty1/console=tty3/g' /boot/cmdline.txt
 echo -n " logo.nologo vt.global_cursor_default=0">>/boot/cmdline.txt
 cat /boot/cmdline.txt
