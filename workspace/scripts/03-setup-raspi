@@ -81,6 +81,7 @@ echo "raspi-config nonint do_net_names 0" >> $FIRSTBOOT_FILE
 
 # Hardware interfaces like SPI, I2C and Serial are already set in the config.txt file in a prior CustoPiZer step
 
+echo "systemctl daemon-reload" >> $FIRSTBOOT_FILE
 echo "sed -i 's| systemd.run.*||g' /boot/cmdline.txt" >> $FIRSTBOOT_FILE
 echo "rm -f $FIRSTBOOT_FILE" >> $FIRSTBOOT_FILE
 echo "exit 0" >> $FIRSTBOOT_FILE
@@ -99,5 +100,3 @@ cat > /etc/systemd/system/getty@tty1.service.d/autologin.conf << EOF
 ExecStart=
 ExecStart=-/sbin/agetty --autologin $RASPI_USER --noclear %I \$TERM
 EOF
-
-systemctl daemon-reload
