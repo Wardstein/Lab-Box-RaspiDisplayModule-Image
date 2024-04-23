@@ -91,7 +91,7 @@ echo "raspi-config nonint do_vnc 0" >> $FIRSTBOOT_FILE
 
 # Disable screen blanking
 #raspi-config nonint do_blanking
-echo "raspi-config nonint do_blanking" >> $FIRSTBOOT_FILE
+echo "raspi-config nonint do_blanking 0" >> $FIRSTBOOT_FILE
 
 # Enable predictable network interface names
 #raspi-config nonint do_net_names 0
@@ -107,6 +107,7 @@ echo "sed -i 's| systemd.run.*||g' /boot/firmware/cmdline.txt" >> $FIRSTBOOT_FIL
 echo "sed -i 's| systemd.unit=kernel.*||g' /boot/firmware/cmdline.txt" >> $FIRSTBOOT_FILE
 echo "rm -f $FIRSTBOOT_FILE" >> $FIRSTBOOT_FILE
 echo "exit 0" >> $FIRSTBOOT_FILE
+chmod +x $FIRSTBOOT_FILE
 
 cat $FIRSTBOOT_FILE
 echo " systemd.run=$FIRSTBOOT_FILE systemd.run_success_action=reboot systemd.unit=kernel-command-line.target">>/boot/cmdline.txt
