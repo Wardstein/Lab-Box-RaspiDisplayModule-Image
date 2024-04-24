@@ -124,7 +124,7 @@ EOF
 # https://www.raspberrypi.com/news/bookworm-the-new-version-of-raspberry-pi-os/ section "What's missing?"
 
 # Switch to old Openbox on X11 for all RasPis. Also for the 4 and 5, where Wayland would be standard now
-https://github.com/RPi-Distro/raspi-config/blob/f2775f9dce074c13828e11d46b5f45bd7ca97d63/raspi-config#L2281
+# https://github.com/RPi-Distro/raspi-config/blob/f2775f9dce074c13828e11d46b5f45bd7ca97d63/raspi-config#L2281
 sed /etc/lightdm/lightdm.conf -i -e "s/^#\\?user-session.*/user-session=LXDE-pi-x/"
 sed /etc/lightdm/lightdm.conf -i -e "s/^#\\?autologin-session.*/autologin-session=LXDE-pi-x/"
 sed /etc/lightdm/lightdm.conf -i -e "s/^#\\?greeter-session.*/greeter-session=pi-greeter/"
