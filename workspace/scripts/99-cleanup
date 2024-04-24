@@ -12,4 +12,9 @@ apt-get clean -y
 apt-get autoclean -y
 apt-get autoremove -y
 
+
+# Return all installed package and versions for archiving
+apt list --installed > /files/PackageVersions-ReturnFile
+
+
 echo_green "Complete!"

@@ -83,6 +83,11 @@ jobs:
         # Rename the image
         cd build
         mv output.img ${{ env.IMAGE_NAME }}
+        
+        # TESTING
+        echo_green "PackageVersions-ReturnFile CONTENT"
+        cat ${{ github.workspace }}/workspace/scripts/files/PackageVersions-ReturnFile
+        echo_green "PackageVersions-ReturnFile END"
 
 
     # https://github.com/OctoPrint/actions/tree/main/package-rpi-image
