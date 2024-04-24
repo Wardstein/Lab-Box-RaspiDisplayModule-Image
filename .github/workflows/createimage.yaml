@@ -85,9 +85,9 @@ jobs:
         mv output.img ${{ env.IMAGE_NAME }}
         
         # TESTING
-        echo_green "PackageVersions-ReturnFile CONTENT"
+        echo "PackageVersions-ReturnFile CONTENT"
         cat ${{ github.workspace }}/workspace/scripts/files/PackageVersions-ReturnFile
-        echo_green "PackageVersions-ReturnFile END"
+        echo "PackageVersions-ReturnFile END"
 
 
     # https://github.com/OctoPrint/actions/tree/main/package-rpi-image
