@@ -113,3 +113,30 @@ cat > /etc/systemd/system/getty@tty1.service.d/autologin.conf << EOF
 ExecStart=
 ExecStart=-/sbin/agetty --autologin $RASPI_USER --noclear %I \$TERM
 EOF
+
+
+# As there are problems with VNC and Wayland Desktops currently, we switch back to X11. RealVNC used to be the standard on the Pi until now.
+# They say they will support also Wayland Desktops in the future, so let's see when this happens, then we can remove the switch to X11 and
+# use whatever Raspberry Pi wants to use as default for the models.
+# See also here:
+# https://help.realvnc.com/hc/en-us/articles/14110635000221-Raspberry-Pi-5-Bookworm-and-RealVNC-Connect
+# https://help.realvnc.com/hc/en-us/articles/14693032843293-Connecting-to-WayVNC-on-a-Raspberry-Pi-device-running-Wayland-using-RealVNC-Viewer
+# https://www.raspberrypi.com/news/bookworm-the-new-version-of-raspberry-pi-os/ section "What's missing?"
+
+# Switch to old Openbox on X11 for all RasPis. Also for the 4 and 5, where Wayland would be standard now
+https://github.com/RPi-Distro/raspi-config/blob/f2775f9dce074c13828e11d46b5f45bd7ca97d63/raspi-config#L2281
+sed /etc/lightdm/lightdm.conf -i -e "s/^#\\?user-session.*/user-session=LXDE-pi-x/"
+sed /etc/lightdm/lightdm.conf -i -e "s/^#\\?autologin-session.*/autologin-session=LXDE-pi-x/"
+sed /etc/lightdm/lightdm.conf -i -e "s/^#\\?greeter-session.*/greeter-session=pi-greeter/"
+if [ -e "/var/lib/AccountsService/users/$RASPI_USER" ] ; then
+	sed "/var/lib/AccountsService/users/$RASPI_USER" -i -e "s/XSession=.*/XSession=LXDE-pi-x/"
+fi
+# Install and previously used RealVNC server again. At some point in future, RealVNC will support Wayland also
+apt-get install -y realvnc-vnc-server
+systemctl enable vncserver-x11-serviced.service
+systemctl start vncserver-x11-serviced.service
+
+
+# Image information file
+cp /files/README_Lab-Box_Image.txt /README_Lab-Box_Image.txt
+echo -e "\n\nImage was build from:\nGit branch: $GITHUB_REF_NAME\nCommit: $GITHUB_SHA" >> /README_Lab-Box_Image.txt
