@@ -83,47 +83,52 @@ rm -f $FIRSTBOOT_FILE
 echo -e "#!/bin/bash\n\n" > $FIRSTBOOT_FILE
 
 # https://serverfault.com/a/103569
-echo "exec 3>&1 4>&2" >> $FIRSTBOOT_FILE
-echo "trap 'exec 2>&4 1>&3' 0 1 2 3" >> $FIRSTBOOT_FILE
-echo "exec 1>/var/log/firstboot.log 2>&1" >> $FIRSTBOOT_FILE
-echo -e "# Everything below will go to the file '/var/log/firstboot.log':\n\n" >> $FIRSTBOOT_FILE
+#echo "exec 3>&1 4>&2" >> $FIRSTBOOT_FILE
+#echo "trap 'exec 2>&4 1>&3' 0 1 2 3" >> $FIRSTBOOT_FILE
+#echo "exec 1>/var/log/firstboot.log 2>&1" >> $FIRSTBOOT_FILE
+#echo -e "# Everything below will go to the file '/var/log/firstboot.log':\n\n" >> $FIRSTBOOT_FILE
 
+echo "{" >> $FIRSTBOOT_FILE
 # Activate RealVNC server again which we installed a bit above
-# echo "raspi-config nonint do_vnc 0" >> $FIRSTBOOT_FILE		# Better we do it directly, as raspi-config could detect wayvnc or wayland and activate the wrong one
+echo "echo \"Activate RealVNC\"" >> $FIRSTBOOT_FILE
 echo "systemctl enable vncserver-x11-serviced.service" >> $FIRSTBOOT_FILE
 echo "systemctl start vncserver-x11-serviced.service" >> $FIRSTBOOT_FILE
 
+echo "echo \"raspi-config do_hostname\"" >> $FIRSTBOOT_FILE
 echo "raspi-config nonint do_hostname $RASPI_HOSTNAME" >> $FIRSTBOOT_FILE
 
 # Enable SSH for login
-echo "raspi-config nonint do_ssh 0" >> $FIRSTBOOT_FILE
+echo "echo \"Enable SSH\"" >> $FIRSTBOOT_FILE
+# echo "raspi-config nonint do_ssh 0" >> $FIRSTBOOT_FILE
+echo "systemctl enable ssh" >> $FIRSTBOOT_FILE
+echo "systemctl start ssh" >> $FIRSTBOOT_FILE
 
-# Boot to desktop, logging in automatically
-#raspi-config nonint do_boot_behaviour B4
-# DOES NOT SEEM TO WORK AS IT CANNOT FIGURE OUT THE USER, SEE SOLUTION ON BOTTOM
-#echo "raspi-config nonint do_boot_behaviour B4" >> $FIRSTBOOT_FILE
-
-# Disable screen blanking
-#raspi-config nonint do_blanking
-echo "raspi-config nonint do_blanking 0" >> $FIRSTBOOT_FILE
+# Disable screen blanking (disable is value 1)
+echo "echo \"raspi-config do_blanking\"" >> $FIRSTBOOT_FILE
+echo "raspi-config nonint do_blanking 1" >> $FIRSTBOOT_FILE
 
 # Enable predictable network interface names
-#raspi-config nonint do_net_names 0
+echo "echo \"raspi-config do_net_names\"" >> $FIRSTBOOT_FILE
 echo "raspi-config nonint do_net_names 0" >> $FIRSTBOOT_FILE
 
 # Hardware interfaces like SPI, I2C and Serial are already set in the config.txt file in a prior CustoPiZer step
 
 # Do this for the spash screen in step 04
+echo "echo \"initramfs\"" >> $FIRSTBOOT_FILE
 update-initramfs -u
 
+echo "echo \"daemon-reload\"" >> $FIRSTBOOT_FILE
 echo "systemctl daemon-reload" >> $FIRSTBOOT_FILE
 # Writing to /boot/cmdline.txt and /boot/firmware/cmdline.txt as it is not exactly sure when the /boot folder content is moved to /boot/firmware
+echo "echo \"sed cmdline.txt\"" >> $FIRSTBOOT_FILE
 echo "sed -i 's| systemd.run.*||g' /boot/cmdline.txt" >> $FIRSTBOOT_FILE
 echo "sed -i 's| systemd.unit=kernel.*||g' /boot/cmdline.txt" >> $FIRSTBOOT_FILE
 echo "sed -i 's| systemd.run.*||g' /boot/firmware/cmdline.txt" >> $FIRSTBOOT_FILE
 echo "sed -i 's| systemd.unit=kernel.*||g' /boot/firmware/cmdline.txt" >> $FIRSTBOOT_FILE
+echo "echo \"rm $FIRSTBOOT_FILE\"" >> $FIRSTBOOT_FILE
 echo "rm -f $FIRSTBOOT_FILE" >> $FIRSTBOOT_FILE
 echo "exit 0" >> $FIRSTBOOT_FILE
+echo "} 2>&1 | tee /var/log/firstboot.log" >> $FIRSTBOOT_FILE
 chmod +x $FIRSTBOOT_FILE
 
 cat $FIRSTBOOT_FILE
@@ -134,7 +139,7 @@ cat /boot/cmdline.txt
 
 
 
-# ENABLE AUTOLOGIN, FIX FROM raspi-config LINE ABOVE
+# ENABLE AUTOLOGIN (solution with raspi-config did not work in the firstboot.sh)
 # Stolen from the raspi-config tool: https://github.com/RPi-Distro/raspi-config/blob/bookworm/raspi-config#L1686; Same also mentioned here: https://raspberrypi.stackexchange.com/a/136099
 sed /etc/lightdm/lightdm.conf -i -e "s/^\(#\|\)autologin-user=.*/autologin-user=$RASPI_USER/"
 cat > /etc/systemd/system/getty@tty1.service.d/autologin.conf << EOF
