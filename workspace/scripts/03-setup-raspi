@@ -60,20 +60,13 @@ echo "trap 'exec 2>&4 1>&3' 0 1 2 3" >> $FIRSTBOOT_FILE
 echo "exec 1>/var/log/firstboot.log 2>&1" >> $FIRSTBOOT_FILE
 echo -e "# Everything below will go to the file '/var/log/firstboot.log':\n\n" >> $FIRSTBOOT_FILE
 
-# Stolen from the Raspberry Pi Imager software
-###echo $RASPI_HOSTNAME > /etc/hostname
-###CURRENT_HOSTNAME=`cat /etc/hostname | tr -d \" \\t\\n\\r\"`
-###sed -i \"s/127.0.1.1.*$CURRENT_HOSTNAME/127.0.1.1\\t"+$RASPI_HOSTNAME+"/g\" /etc/hosts
-#raspi-config nonint do_hostname $RASPI_HOSTNAME
+
 echo "raspi-config nonint do_hostname $RASPI_HOSTNAME" >> $FIRSTBOOT_FILE
 
 # Enable SSH for login
-###systemctl enable ssh
-#raspi-config nonint do_ssh 0
 echo "raspi-config nonint do_ssh 0" >> $FIRSTBOOT_FILE
 
 # Enable VNC server
-#raspi-config nonint do_vnc 0
 echo "raspi-config nonint do_vnc 0" >> $FIRSTBOOT_FILE
 
 # Boot to desktop, logging in automatically
@@ -90,6 +83,9 @@ echo "raspi-config nonint do_blanking 0" >> $FIRSTBOOT_FILE
 echo "raspi-config nonint do_net_names 0" >> $FIRSTBOOT_FILE
 
 # Hardware interfaces like SPI, I2C and Serial are already set in the config.txt file in a prior CustoPiZer step
+
+# Do this for the spash screen in step 04
+update-initramfs -u
 
 echo "systemctl daemon-reload" >> $FIRSTBOOT_FILE
 # Writing to /boot/cmdline.txt and /boot/firmware/cmdline.txt as it is not exactly sure when the /boot folder content is moved to /boot/firmware

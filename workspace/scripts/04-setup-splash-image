@@ -23,4 +23,5 @@ cat /boot/cmdline.txt
 
 # This is the ultimate step for Bookworm, otherwise all the above has no effect!
 # Thanks to here: https://forums.raspberrypi.com/viewtopic.php?p=2195808#p2195808
-update-initramfs -u
+# update-initramfs -u
+# DOES NOT WORK HERE! MOVED TO STEP 03 IN firstboot.sh
