@@ -65,7 +65,7 @@ jobs:
         workspace: "${{ github.workspace }}/build"
         scripts:  "${{ github.workspace }}/workspace/scripts"
         config: "${{ github.workspace }}/config.local"
-        environment: '{ "IMAGE_BITWIDTH": "${{ env.IMAGE_BITWIDTH }}", "RASPI_HOSTNAME": "lab-box", "RASPI_USER": "${{ github.event.inputs.default-user }}", "RASPI_PASSWORD": "${{ github.event.inputs.default-password }}" }'
+        environment: '{ "IMAGE_BITWIDTH": "${{ env.IMAGE_BITWIDTH }}", "RASPI_HOSTNAME": "lab-box", "RASPI_USER": "${{ github.event.inputs.default-user }}", "RASPI_PASSWORD": "${{ github.event.inputs.default-password }}", "GITHUB_ENV_SHA": "$GITHUB_SHA", "$GITHUB_ENV_REF_NAME": "$GITHUB_REF_NAME" }'
 
 
     - name: "Prepare release"
@@ -83,11 +83,6 @@ jobs:
         # Rename the image
         cd build
         mv output.img ${{ env.IMAGE_NAME }}
-        
-        # TESTING
-        echo "PackageVersions-ReturnFile CONTENT"
-        cat ${{ github.workspace }}/workspace/scripts/files/PackageVersions-ReturnFile
-        echo "PackageVersions-ReturnFile END"
 
 
     # https://github.com/OctoPrint/actions/tree/main/package-rpi-image

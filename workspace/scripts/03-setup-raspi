@@ -66,8 +66,13 @@ if [ -e "/var/lib/AccountsService/users/$RASPI_USER" ] ; then
 	sed "/var/lib/AccountsService/users/$RASPI_USER" -i -e "s/XSession=.*/XSession=LXDE-pi-x/"
 fi
 
-# Install previously used RealVNC server again. At some point in future, RealVNC will support Wayland also
-apt-get install -y realvnc-vnc-server
+# Install RealVNC server again. At some point in future, RealVNC will support Wayland also
+apt-get remove -y wayvnc
+# Remove the installed version, as it is not compatible with 32bit and has other problems.
+# In February 2024 v7.10.0 added support for that, but as of April 2024, the supplied package version is still 7.5.1
+apt-get remove -y realvnc-vnc-server
+# Install more recent version
+apt install -y /files/VNC-Server-7.11.0-Linux-ARM.deb
 
 
 
@@ -75,7 +80,7 @@ apt-get install -y realvnc-vnc-server
 FIRSTBOOT_FILE="/firstboot.sh"
 rm -f $FIRSTBOOT_FILE
 
-echo -e "#!/bin/bash\n\nset -e\n\n" > $FIRSTBOOT_FILE
+echo -e "#!/bin/bash\n\n" > $FIRSTBOOT_FILE
 
 # https://serverfault.com/a/103569
 echo "exec 3>&1 4>&2" >> $FIRSTBOOT_FILE
@@ -84,6 +89,7 @@ echo "exec 1>/var/log/firstboot.log 2>&1" >> $FIRSTBOOT_FILE
 echo -e "# Everything below will go to the file '/var/log/firstboot.log':\n\n" >> $FIRSTBOOT_FILE
 
 # Activate RealVNC server again which we installed a bit above
+# echo "raspi-config nonint do_vnc 0" >> $FIRSTBOOT_FILE		# Better we do it directly, as raspi-config could detect wayvnc or wayland and activate the wrong one
 echo "systemctl enable vncserver-x11-serviced.service" >> $FIRSTBOOT_FILE
 echo "systemctl start vncserver-x11-serviced.service" >> $FIRSTBOOT_FILE
 
@@ -91,9 +97,6 @@ echo "raspi-config nonint do_hostname $RASPI_HOSTNAME" >> $FIRSTBOOT_FILE
 
 # Enable SSH for login
 echo "raspi-config nonint do_ssh 0" >> $FIRSTBOOT_FILE
-
-# Enable VNC server
-echo "raspi-config nonint do_vnc 0" >> $FIRSTBOOT_FILE
 
 # Boot to desktop, logging in automatically
 #raspi-config nonint do_boot_behaviour B4
@@ -144,4 +147,4 @@ EOF
 
 # Image information file
 cp /files/README_Lab-Box_Image.txt /README_Lab-Box_Image.txt
-echo -e "\n\nImage was build from:\nGit branch: $GITHUB_REF_NAME\nCommit: $GITHUB_SHA" >> /README_Lab-Box_Image.txt
+echo -e "\n\nImage was build from:\nGit branch: $GITHUB_ENV_REF_NAME\nCommit: $GITHUB_ENV_SHA" >> /README_Lab-Box_Image.txt
