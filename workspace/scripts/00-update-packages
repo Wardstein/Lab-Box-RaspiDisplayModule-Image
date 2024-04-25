@@ -7,6 +7,12 @@ source /common.sh
 install_cleanup_trap
 
 # Scripts run as root by default
+
+# Put the raspi-firmware packet on hold (exclude from updated) as it requires /boot/fimrware to be present, but that is not the case until the first real boot!
+apt-mark hold raspi-firmware
+
 apt-get update
 apt-get upgrade -y
 apt list --installed
+
+apt-mark unhold raspi-firmware
