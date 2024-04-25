@@ -98,6 +98,15 @@ cat /boot/cmdline.txt
 
 
 
+# SETUP RTC ---------------------------------------------------------------------------------------------------------------------------------------------------
+# Done like here: https://tutorials-raspberrypi.de/raspberry-pi-rtc-modul-i2c-echtzeituhr/ but there are many tutorials out there
+apt-get install -y i2c-tools
+echo -e "i2c-dev\nrtc-ds1307" >> /etc/modules
+sed -i 's|exit 0|echo ds1307 0x68 > /sys/class/i2c-adapter/i2c-1/new_device\nhwclock --hctosys\n\nexit 0|g' /etc/rc.local
+cat /etc/rc.local
+
+
+
 # CREATE A ONE-TIME SETUP FILE --------------------------------------------------------------------------------------------------------------------------------
 FIRSTBOOT_FILE="/firstboot.sh"
 rm -f $FIRSTBOOT_FILE
@@ -176,13 +185,3 @@ EOF
 # Image information file --------------------------------------------------------------------------------------------------------------------------------------
 cp /files/README_Lab-Box_Image.txt /README_Lab-Box_Image.txt
 echo -e "\n\nImage was build from:\nGit branch: $GITHUB_ENV_REF_NAME\nCommit: $GITHUB_ENV_SHA" >> /README_Lab-Box_Image.txt
-
-
-
-# SETUP RTC ---------------------------------------------------------------------------------------------------------------------------------------------------
-# Done like here: https://tutorials-raspberrypi.de/raspberry-pi-rtc-modul-i2c-echtzeituhr/ but there are many tutorials out there
-apt-get install -y i2c-tools
-echo "i2c-dev" >> /etc/modules
-modprobe i2c_dev
-sed -i 's|exit 0|echo ds1307 0x68 > /sys/class/i2c-adapter/i2c-1/new_device\nhwclock --hctosys\n\nexit 0|g' /etc/rc.local
-cat /etc/rc.local
