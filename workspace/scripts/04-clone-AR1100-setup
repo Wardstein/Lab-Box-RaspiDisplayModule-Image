@@ -1,0 +1,19 @@
+set -x
+set -e
+
+export LC_ALL=C
+
+source /common.sh
+install_cleanup_trap
+
+# Scripts run as root by default
+
+
+# This script clones the rpi-AR1100 fork we have for the Lab-Box. This is a setup tool for the AR1100 touch screen controller on the Lab-Box Raspi Touch Display Module
+
+apt-get install -y git make g++ libusb-1.0-0-dev libgtk2.0-dev
+
+cd /home/$RASPI_USER
+git clone https://github.com/Wardstein/rpi-AR1100.git
+make
+chmod +x AR1100
