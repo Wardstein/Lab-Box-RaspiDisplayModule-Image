@@ -12,21 +12,23 @@ install_cleanup_trap
 # https://www.raspberrypi.com/documentation/computers/configuration.html#raspi-config-cli
 
 
-# Add the default user
+
+# ADD OUR NEW DEFAULT USER ------------------------------------------------------------------------------------------------------------------------------------
 adduser --gecos "" --disabled-password $RASPI_USER
 chpasswd <<<"$RASPI_USER:$RASPI_PASSWORD"
 usermod -a -G users,adm,dialout,audio,netdev,video,plugdev,cdrom,games,input,gpio,spi,i2c,render,sudo $RASPI_USER
 # Show a control output which groups the user is in
 groups $RASPI_USER
 
+# Make sure user doesn't require a password when running as sudo; https://github.com/Pioreactor/CustoPiZer/blob/pioreactor/workspace/scripts/01-make-pioreactor-user.sh
+echo "$RASPI_USER ALL=(ALL) NOPASSWD: ALL" | sudo EDITOR='tee -a' visudo -f /etc/sudoers.d/010_$RASPI_USER-nopasswd
+
 # Remove SSH pre-authentication banner
 rm -f /etc/ssh/sshd_config.d/rename_user.conf
 
 
-# Make sure user doesn't require a password when running as sudo; https://github.com/Pioreactor/CustoPiZer/blob/pioreactor/workspace/scripts/01-make-pioreactor-user.sh
-echo "$RASPI_USER ALL=(ALL) NOPASSWD: ALL" | sudo EDITOR='tee -a' visudo -f /etc/sudoers.d/010_$RASPI_USER-nopasswd
 
-
+# REMOVE NOT NEEDED SOFTWARE ----------------------------------------------------------------------------------------------------------------------------------
 # https://github.com/gitbls/sdm/blob/master/plugins/disables#L90
 systemctl disable triggerhappy.service 
 systemctl disable triggerhappy.socket
@@ -49,6 +51,7 @@ rm -f /etc/xdg/autostart/deluser.desktop
 
 
 
+# SWITCH BACK TO X11 ON ALL PIs AND INSTALL NEWEST VNC VERSION ------------------------------------------------------------------------------------------------
 # As there are problems with VNC and Wayland Desktops currently, we switch back to X11. RealVNC used to be the standard on the Pi until now.
 # They say they will support also Wayland Desktops in the future, so let's see when this happens, then we can remove the switch to X11 and
 # use whatever Raspberry Pi wants to use as default for the models.
@@ -76,7 +79,26 @@ apt install -y /files/VNC-Server-7.11.0-Linux-ARM.deb
 
 
 
-# Create a one-time setup file
+# MODIFY SPLASHSCREEN WITH OUR LOGO ---------------------------------------------------------------------------------------------------------------------------
+mv /usr/share/plymouth/themes/pix/splash.png /usr/share/plymouth/themes/pix/splash.png.save
+cp /files/Lab-Box_Logo.png /usr/share/plymouth/themes/pix/splash.png
+plymouth-set-default-theme --rebuild-initrd pix
+
+# https://scribles.net/customizing-boot-up-screen-on-raspberry-pi/
+# "Replace “console=tty1” with “console=tty3”. This redirects boot messages to tty3."
+sed -i 's/console=tty1/console=tty3/g' /boot/cmdline.txt
+# First replace a possible new line character at the end of the line, then append our new stuff
+sed -i ':a;N;$!ba;s/\n/ /g' /boot/cmdline.txt
+echo -n " logo.nologo vt.global_cursor_default=0">>/boot/cmdline.txt
+cat /boot/cmdline.txt
+# This is the ultimate step for Bookworm, otherwise all the above has no effect!
+# Thanks to here: https://forums.raspberrypi.com/viewtopic.php?p=2195808#p2195808
+# update-initramfs -u
+# DOES NOT WORK HERE! MOVED TO firstboot.sh
+
+
+
+# CREATE A ONE-TIME SETUP FILE --------------------------------------------------------------------------------------------------------------------------------
 FIRSTBOOT_FILE="/firstboot.sh"
 rm -f $FIRSTBOOT_FILE
 
@@ -114,8 +136,9 @@ echo "raspi-config nonint do_net_names 0" >> $FIRSTBOOT_FILE
 # Hardware interfaces like SPI, I2C and Serial are already set in the config.txt file in a prior CustoPiZer step
 
 # Do this for the spash screen in step 04
-echo "echo \"initramfs\"" >> $FIRSTBOOT_FILE
-update-initramfs -u
+echo "echo \"plymouth rebuild-initrd\"" >> $FIRSTBOOT_FILE
+# echo "update-initramfs -u" >> $FIRSTBOOT_FILE
+echo "plymouth-set-default-theme --rebuild-initrd pix" >> $FIRSTBOOT_FILE		# This calls "update-initramfs -u", but use the plymouth command here for better understanding why
 
 echo "echo \"daemon-reload\"" >> $FIRSTBOOT_FILE
 echo "systemctl daemon-reload" >> $FIRSTBOOT_FILE
@@ -139,8 +162,9 @@ cat /boot/cmdline.txt
 
 
 
-# ENABLE AUTOLOGIN (solution with raspi-config did not work in the firstboot.sh)
-# Stolen from the raspi-config tool: https://github.com/RPi-Distro/raspi-config/blob/bookworm/raspi-config#L1686; Same also mentioned here: https://raspberrypi.stackexchange.com/a/136099
+# ENABLE AUTOLOGIN (solution with raspi-config did not work in the firstboot.sh) ------------------------------------------------------------------------------
+# Stolen from the raspi-config tool: https://github.com/RPi-Distro/raspi-config/blob/bookworm/raspi-config#L1686
+# Same also mentioned here: https://raspberrypi.stackexchange.com/a/136099
 sed /etc/lightdm/lightdm.conf -i -e "s/^\(#\|\)autologin-user=.*/autologin-user=$RASPI_USER/"
 cat > /etc/systemd/system/getty@tty1.service.d/autologin.conf << EOF
 [Service]
@@ -150,6 +174,6 @@ EOF
 
 
 
-# Image information file
+# Image information file --------------------------------------------------------------------------------------------------------------------------------------
 cp /files/README_Lab-Box_Image.txt /README_Lab-Box_Image.txt
 echo -e "\n\nImage was build from:\nGit branch: $GITHUB_ENV_REF_NAME\nCommit: $GITHUB_ENV_SHA" >> /README_Lab-Box_Image.txt

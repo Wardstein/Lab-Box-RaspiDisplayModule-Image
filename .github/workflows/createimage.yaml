@@ -37,6 +37,8 @@ jobs:
         echo "IMAGE_NAME=$IMAGE_NAME" >> $GITHUB_ENV
         IMAGE_NAME_ZIP="lab-box_raspi_touch_display_module_image.zip"
         echo "IMAGE_NAME_ZIP=$IMAGE_NAME_ZIP" >> $GITHUB_ENV
+        echo "github.sha: ${{ github.sha }}"
+        echo "github.ref: ${{ github.ref }}"
 
     - name: "Download RPi image"
       id: download_rpi_image
@@ -65,7 +67,7 @@ jobs:
         workspace: "${{ github.workspace }}/build"
         scripts:  "${{ github.workspace }}/workspace/scripts"
         config: "${{ github.workspace }}/config.local"
-        environment: '{ "IMAGE_BITWIDTH": "${{ env.IMAGE_BITWIDTH }}", "RASPI_HOSTNAME": "lab-box", "RASPI_USER": "${{ github.event.inputs.default-user }}", "RASPI_PASSWORD": "${{ github.event.inputs.default-password }}", "GITHUB_ENV_SHA": "$GITHUB_SHA", "$GITHUB_ENV_REF_NAME": "$GITHUB_REF_NAME" }'
+        environment: '{ "IMAGE_BITWIDTH": "${{ env.IMAGE_BITWIDTH }}", "RASPI_HOSTNAME": "lab-box", "RASPI_USER": "${{ github.event.inputs.default-user }}", "RASPI_PASSWORD": "${{ github.event.inputs.default-password }}", "GITHUB_ENV_SHA": "${{ github.sha }}", "$GITHUB_ENV_REF_NAME": "${{ github.ref }}" }'
 
 
     - name: "Prepare release"
