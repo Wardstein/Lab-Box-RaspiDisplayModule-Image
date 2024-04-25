@@ -15,5 +15,6 @@ apt-get install -y git make g++ libusb-1.0-0-dev libgtk2.0-dev
 
 cd /home/$RASPI_USER
 git clone https://github.com/Wardstein/rpi-AR1100.git
+cd rpi-AR1100
 make
 chmod +x AR1100
