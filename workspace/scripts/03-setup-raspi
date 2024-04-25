@@ -89,7 +89,7 @@ plymouth-set-default-theme --rebuild-initrd pix
 sed -i 's/console=tty1/console=tty3/g' /boot/cmdline.txt
 # First replace a possible new line character at the end of the line, then append our new stuff
 sed -i ':a;N;$!ba;s/\n/ /g' /boot/cmdline.txt
-echo -n " logo.nologo vt.global_cursor_default=0">>/boot/cmdline.txt
+echo -n " logo.nologo vt.global_cursor_default=0 loglevel=3" >> /boot/cmdline.txt
 cat /boot/cmdline.txt
 # This is the ultimate step for Bookworm, otherwise all the above has no effect!
 # Thanks to here: https://forums.raspberrypi.com/viewtopic.php?p=2195808#p2195808
@@ -135,15 +135,8 @@ echo "raspi-config nonint do_net_names 0" >> $FIRSTBOOT_FILE
 
 # Hardware interfaces like SPI, I2C and Serial are already set in the config.txt file in a prior CustoPiZer step
 
-# Do this for the spash screen in step 04
+# Activate splash screen we added further up
 echo "echo \"plymouth rebuild-initrd\"" >> $FIRSTBOOT_FILE
-# echo "update-initramfs -u" >> $FIRSTBOOT_FILE
-echo "echo \"building theme c\" >> /dev/console" >> $FIRSTBOOT_FILE
-echo "echo \"building theme t\" >> /dev/tty" >> $FIRSTBOOT_FILE
-echo "echo \"building theme t0\" >> /dev/tty0" >> $FIRSTBOOT_FILE
-echo "echo \"building theme t1\" >> /dev/tty1" >> $FIRSTBOOT_FILE
-echo "echo \"building theme t2\" >> /dev/tty2" >> $FIRSTBOOT_FILE
-echo "echo \"building theme t3\" >> /dev/tty3" >> $FIRSTBOOT_FILE
 echo "plymouth-set-default-theme --rebuild-initrd pix" >> $FIRSTBOOT_FILE		# This calls "update-initramfs -u", but use the plymouth command here for better understanding why
 
 echo "echo \"daemon-reload\"" >> $FIRSTBOOT_FILE
