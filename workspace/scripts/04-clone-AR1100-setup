@@ -11,7 +11,16 @@ install_cleanup_trap
 
 # This script clones the rpi-AR1100 fork we have for the Lab-Box. This is a setup tool for the AR1100 touch screen controller on the Lab-Box Raspi Touch Display Module
 
+
+
+# Put the raspi-firmware and linux packages on hold (exclude from updated) as it requires /boot/fimrware to be present, but that is not the case until the first real boot!
+apt-mark hold raspi-firmware linux-headers* linux-image*
+
 apt-get install -y git make g++ libusb-1.0-0-dev libgtk2.0-dev
+
+apt-mark unhold raspi-firmware linux-headers* linux-image*
+
+
 
 cd /home/$RASPI_USER
 git clone https://github.com/Wardstein/rpi-AR1100.git
