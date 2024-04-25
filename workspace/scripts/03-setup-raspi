@@ -138,6 +138,12 @@ echo "raspi-config nonint do_net_names 0" >> $FIRSTBOOT_FILE
 # Do this for the spash screen in step 04
 echo "echo \"plymouth rebuild-initrd\"" >> $FIRSTBOOT_FILE
 # echo "update-initramfs -u" >> $FIRSTBOOT_FILE
+echo "echo \"building theme c\" >> /dev/console" >> $FIRSTBOOT_FILE
+echo "echo \"building theme t\" >> /dev/tty" >> $FIRSTBOOT_FILE
+echo "echo \"building theme t0\" >> /dev/tty0" >> $FIRSTBOOT_FILE
+echo "echo \"building theme t1\" >> /dev/tty1" >> $FIRSTBOOT_FILE
+echo "echo \"building theme t2\" >> /dev/tty2" >> $FIRSTBOOT_FILE
+echo "echo \"building theme t3\" >> /dev/tty3" >> $FIRSTBOOT_FILE
 echo "plymouth-set-default-theme --rebuild-initrd pix" >> $FIRSTBOOT_FILE		# This calls "update-initramfs -u", but use the plymouth command here for better understanding why
 
 echo "echo \"daemon-reload\"" >> $FIRSTBOOT_FILE
