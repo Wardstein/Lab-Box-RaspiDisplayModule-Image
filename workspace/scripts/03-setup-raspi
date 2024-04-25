@@ -102,7 +102,7 @@ cat /boot/cmdline.txt
 # Done like here: https://tutorials-raspberrypi.de/raspberry-pi-rtc-modul-i2c-echtzeituhr/ but there are many tutorials out there
 apt-get install -y i2c-tools
 echo -e "i2c-dev\nrtc-ds1307" >> /etc/modules
-sed -i 's|exit 0|echo ds1307 0x68 > /sys/class/i2c-adapter/i2c-1/new_device\nhwclock --hctosys\n\nexit 0|g' /etc/rc.local
+sed -i -e '$i echo ds1307 0x68 > /sys/class/i2c-adapter/i2c-1/new_device\nhwclock --hctosys\n\n' /etc/rc.local
 cat /etc/rc.local
 
 
