@@ -15,17 +15,19 @@ After you flashed an SD card and let the module/RasPi boot for the first time, i
 
 
 # Flashing an SD card
-To flash an SD card, I can recommend using [Balena Etcher](https://etcher.balena.io/). Just download the latest image from the [release page of this repo here](https://github.com/Wardstein/Lab-Box-RaspiDisplayModule-Image/releases) and select it in etcher.
+Just download the latest image from the [release page of this repo here](https://github.com/Wardstein/Lab-Box-RaspiDisplayModule-Image/releases).
 
-TODO: test Raspiberry Pi Imager, as it can apply WiFi and locale settings
+To flash an SD card, I can recommend using the [Raspberry Pi Imager](https://www.raspberrypi.com/software/). It can also apply WiFi settings such as SSID, password and country, and locale settings such as language and keyboard layout. BUT DO NOT SETUP A USER OR SSH SETTINGS, they are already done in the image!
+
+Alternatively you can use [Balena Etcher](https://etcher.balena.io/), but it does not offer customizing any settings in the image.
 
 
 # Missing
 * Clone Lab-Box Display Software repo
 
 
-
 # Roadmap
 * I would like to export a list of all installed packages with versions back to Github Actions and attach that file to the release to track the installed packages
 	* But I could not figure out, how I pass something back from within CustoPiZer (chroot) to the Github Actions run environment
 * Test building x64 images, here is a hint/fix how it should work: https://github.com/OctoPrint/CustoPiZer/issues/21
+* Think of setting up basic firewall rules
