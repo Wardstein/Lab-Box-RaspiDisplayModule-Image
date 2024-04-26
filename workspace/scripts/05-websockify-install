@@ -41,7 +41,9 @@ sed -i -e '$i websockify -v 5901 127.0.0.1:5900\n\n' /etc/rc.local
 # We create a self-signed certificate, backup the nginx default config and overwrite it with our own.
 # The config redirects the user to the https version and also proxies the websocket
 
-sudo openssl req -x509 -nodes -days 36500 -keyout /etc/ssl/private/nginx-selfsigned.key -out /etc/ssl/certs/nginx-selfsigned.crt -subj '/CN=lab-box/O=Lab-Box./C=DE'
+openssl req -x509 -nodes -days 36500 -keyout /etc/ssl/private/nginx-selfsigned.key -out /etc/ssl/certs/nginx-selfsigned.crt -subj '/CN=lab-box/O=Lab-Box./C=DE'
+#chmod +r /etc/ssl/private/nginx-selfsigned.key
+#chmod +r /etc/ssl/certs/nginx-selfsigned.crt
 cp /etc/nginx/sites-available/default /etc/nginx/sites-available/default_backup
 cat <<EOF > /etc/nginx/sites-enabled/default
 # SSL Redirect
