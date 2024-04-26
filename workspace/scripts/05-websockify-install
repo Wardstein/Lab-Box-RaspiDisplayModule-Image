@@ -81,6 +81,8 @@ EOL
 
 # SETUP REALVNC TO BE COMPATIBLE WITH noVNC -------------------------------------------------------------------------------------------------------------------
 # This config sets the neccesary encryption for noVNC to connect and allows multiple users to be connected at the same time
+# Overview over all parameters here: https://help.realvnc.com/hc/en-us/articles/360002251297-RealVNC-Server-Parameter-Reference
+# Paths for config files here: https://help.realvnc.com/hc/en-us/articles/360002253878-Configuring-RealVNC-Connect-Using-Parameters#populating-configuration-files-with-parameters-0-2
 cat <<EOF > /etc/vnc/config.d/common.custom
 Encryption=PreferOn
 AlwaysShared=True
