@@ -11,7 +11,7 @@ install_cleanup_trap
 
 # Clone Lab-Box Python GUI git repo in home folder
 cd /home/$RASPI_USER
-git clone --depth 1 --branch $LABBOX-PYTHON-GUI-BRANCH https://github.com/Wardstein/Lab-Box-Python-GUI.git
+git clone --depth 1 --branch $LABBOX_PYTHON_GUI_BRANCH https://github.com/Wardstein/Lab-Box-Python-GUI.git
 cd Lab-Box-Python-GUI
 chmod +x startRasPiDisplayModule.sh
 
