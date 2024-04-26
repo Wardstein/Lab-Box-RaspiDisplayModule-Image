@@ -8,6 +8,22 @@ install_cleanup_trap
 
 # Scripts run as root by default
 
-echo_red "TODO: install Lab-Box python software"
-# Clone Lab-Box git repo in home folder
+
+# Clone Lab-Box Python GUI git repo in home folder
+cd /home/$RASPI_USER
+git clone --depth 1 --branch main https://github.com/Wardstein/Lab-Box-Python-GUI.git
+cd Lab-Box-Python-GUI
+chmod +x startRasPiDisplayModule.sh
+
+
 # Setup autostart
+$AUTOSTART_FILE="/etc/xdg/autostart/lab-box-gui.desktop"
+cat <<EOF > $AUTOSTART_FILE
+[Desktop Entry]
+Type=Application
+Name=Lab-Box GUI
+Comment=Lab-Box GUI
+NoDisplay=false
+Exec=/usr/bin/lxterminal -e /home/$RASPI_USER/Lab-Box-Python-GUI/startRasPiDisplayModule.sh
+NotShowIn=GNOME;KDE;XFCE;
+EOF
