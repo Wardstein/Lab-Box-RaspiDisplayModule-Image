@@ -22,5 +22,5 @@ apt update
 
 
 # Install packages we rely on. NEEDS TO BE UPDATED WHEN USING SOMETHING ADDITIONAL
-apt install -y python3-pyside6
+apt install -y python3-pyside6*
 apt install -y python3-aiohttp
