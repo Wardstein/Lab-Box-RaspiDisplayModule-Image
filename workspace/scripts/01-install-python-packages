@@ -18,9 +18,9 @@ install_cleanup_trap
 #		× This environment is externally managed
 #		╰─> To install Python packages system-wide, try apt install
 
-apt update
+#apt update
 
 
 # Install packages we rely on. NEEDS TO BE UPDATED WHEN USING SOMETHING ADDITIONAL
-apt install -y python3-pyside6*
-apt install -y python3-aiohttp
+# As the installation is now "externally managed" with the new images, we force the package installation with --break-system-packages
+pip install --break-system-packages pyside6 aiohttp
