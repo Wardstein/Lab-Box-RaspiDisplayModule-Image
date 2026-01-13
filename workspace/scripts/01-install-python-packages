@@ -12,9 +12,15 @@ install_cleanup_trap
 # Raspberry Pi OS image with Debian 12 Bookworm brings Python 3.11 with it (as of 13.01.2026)
 # Raspberry Pi OS image with Debian 13 Trixie brings Python 3.13 with it (as of 13.01.2026)
 
-# Upgrade pip
-python3 -m pip install --upgrade pip 
+
+# We install the needed packages with apt, as pip recommends this method when wanting to install the packages system-wide. Example output below:
+#		error: externally-managed-environment
+#		× This environment is externally managed
+#		╰─> To install Python packages system-wide, try apt install
+
+apt update
+
 
 # Install packages we rely on. NEEDS TO BE UPDATED WHEN USING SOMETHING ADDITIONAL
-python3 -m pip install pyside6 aiohttp
-# In future, this should come from the Raspi Display Module software repo when it is cloned and then install the requirements
+apt install -y python3-pyside6
+apt install -y python3-aiohttp
