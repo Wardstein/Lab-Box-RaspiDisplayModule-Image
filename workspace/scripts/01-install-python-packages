@@ -9,25 +9,11 @@ install_cleanup_trap
 # Scripts run as root by default
 
 
-# Raspberry Pi OS image with Debian 12 Bookworm brings Python 3.11 with it (as of 21.04.2024), but we still need Python 3.7 due to the pyside2 packages.
-# Things tried to install Python 3.7:
-# - Install from packages -> not available anymore
-# - Install with pyenv -> pyenv cannot be run in chroot environment as it seems
-# - Compile from sources -> needs several hours for the tests and never seem to finish in the CustoPiZer chroot environment
-# The (Raspi) Python Software is not dependent on Python 3.7, it is only because of the pyside2 packages. But there are pyside2 packages in the Bookworm repo also.
-# Unfortunately there are no pyside6 packages available so far.
+# Raspberry Pi OS image with Debian 12 Trixie brings Python 3.13 with it (as of 13.01.2026)
 
+# Upgrade pip
+python3 -m pip install --upgrade pip 
 
-# We install the needed packages with apt, as pip recommends this method when wanting to install the packages system-wide. Example output below:
-#		error: externally-managed-environment
-#		× This environment is externally managed
-#		╰─> To install Python packages system-wide, try apt install
-
-
-# Install pyside2 and qml packages
-apt update
-apt install -y python3-pyside2.*
-apt install -y qml-module-qt*
-
-# Install other packages we rely on. NEEDS TO BE UPDATED WHEN USING SOMETHING ADDITIONAL
-apt install -y python3-aiohttp
+# Install packages we rely on. NEEDS TO BE UPDATED WHEN USING SOMETHING ADDITIONAL
+python3 -m pip install pyside6 aiohttp
+# In future, this should come from the Raspi Display Module software repo when it is cloned and then install the requirements

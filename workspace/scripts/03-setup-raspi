@@ -130,19 +130,21 @@ echo "raspi-config nonint do_hostname $RASPI_HOSTNAME" >> $FIRSTBOOT_FILE
 
 # Enable SSH for login
 echo "echo \"Enable SSH\"" >> $FIRSTBOOT_FILE
-# echo "raspi-config nonint do_ssh 0" >> $FIRSTBOOT_FILE
 echo "systemctl enable ssh" >> $FIRSTBOOT_FILE
 echo "systemctl start ssh" >> $FIRSTBOOT_FILE
 
 # Disable screen blanking (disable is value 1)
-echo "echo \"raspi-config do_blanking\"" >> $FIRSTBOOT_FILE
+echo "echo \"raspi-config do_blanking 1\"" >> $FIRSTBOOT_FILE
 echo "raspi-config nonint do_blanking 1" >> $FIRSTBOOT_FILE
 
 # Enable predictable network interface names
-echo "echo \"raspi-config do_net_names\"" >> $FIRSTBOOT_FILE
+echo "echo \"raspi-config do_net_names 0\"" >> $FIRSTBOOT_FILE
 echo "raspi-config nonint do_net_names 0" >> $FIRSTBOOT_FILE
 
 # Hardware interfaces like SPI, I2C and Serial are already set in the config.txt file in a prior CustoPiZer step
+# But disable serial console
+echo "echo \"raspi-config do_serial_cons 1\"" >> $FIRSTBOOT_FILE
+echo "raspi-config do_serial_cons 1" >> $FIRSTBOOT_FILE
 
 # Activate splash screen we added further up
 echo "echo \"plymouth rebuild-initrd\"" >> $FIRSTBOOT_FILE
