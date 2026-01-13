@@ -9,7 +9,8 @@ install_cleanup_trap
 # Scripts run as root by default
 
 # Put the raspi-firmware and linux packages on hold (exclude from updated) as it requires /boot/fimrware to be present, but that is not the case until the first real boot!
-apt-mark hold raspi-firmware linux-headers* linux-image* initramfs-tools*
+# initramfs-tools makes problems after install (--configure)
+apt-mark hold raspi-firmware linux-headers* linux-image* initramfs-tools initramfs-tools*
 
 apt-get update
 apt full-upgrade -y
