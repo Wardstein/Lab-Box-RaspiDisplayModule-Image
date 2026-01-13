@@ -23,4 +23,4 @@ install_cleanup_trap
 
 # Install packages we rely on. NEEDS TO BE UPDATED WHEN USING SOMETHING ADDITIONAL
 # As the installation is now "externally managed" with the new images, we force the package installation with --break-system-packages
-python -m pip install --break-system-packages PySide6 aiohttp
+# python -m pip install --break-system-packages PySide6 aiohttp
