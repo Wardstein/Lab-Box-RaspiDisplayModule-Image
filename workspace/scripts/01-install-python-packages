@@ -9,7 +9,8 @@ install_cleanup_trap
 # Scripts run as root by default
 
 
-# Raspberry Pi OS image with Debian 12 Trixie brings Python 3.13 with it (as of 13.01.2026)
+# Raspberry Pi OS image with Debian 12 Bookworm brings Python 3.11 with it (as of 13.01.2026)
+# Raspberry Pi OS image with Debian 13 Trixie brings Python 3.13 with it (as of 13.01.2026)
 
 # Upgrade pip
 python3 -m pip install --upgrade pip 
