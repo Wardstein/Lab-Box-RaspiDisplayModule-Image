@@ -13,7 +13,7 @@ install_cleanup_trap
 apt-mark hold raspi-firmware linux-headers* linux-image* initramfs-tools initramfs-tools*
 
 apt-get update
-apt full-upgrade -y
+# apt full-upgrade -y           # initramfs-tools makes problems after install (--configure)
 apt list --installed
 
 apt-mark unhold raspi-firmware linux-headers* linux-image*
