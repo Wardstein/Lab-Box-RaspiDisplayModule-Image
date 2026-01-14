@@ -82,7 +82,7 @@ apt install -y /files/VNC-Server-7.11.0-Linux-ARM.deb
 
 
 # MODIFY SPLASHSCREEN WITH OUR LOGO ---------------------------------------------------------------------------------------------------------------------------
-mv /usr/share/plymouth/themes/pix/splash.png /usr/share/plymouth/themes/pix/splash.png.save
+# mv /usr/share/plymouth/themes/pix/splash.png /usr/share/plymouth/themes/pix/splash.png.save
 cp /files/Lab-Box_Logo.png /usr/share/plymouth/themes/pix/splash.png
 plymouth-set-default-theme --rebuild-initrd pix
 
