@@ -62,12 +62,14 @@ rm -f /etc/xdg/autostart/deluser.desktop
 
 # Switch to old Openbox on X11 for all RasPis. Also for the 4 and 5, where Wayland would be standard now
 # https://github.com/RPi-Distro/raspi-config/blob/f2775f9dce074c13828e11d46b5f45bd7ca97d63/raspi-config#L2281
-sed /etc/lightdm/lightdm.conf -i -e "s/^#\\?user-session.*/user-session=LXDE-pi-x/"
-sed /etc/lightdm/lightdm.conf -i -e "s/^#\\?autologin-session.*/autologin-session=LXDE-pi-x/"
-sed /etc/lightdm/lightdm.conf -i -e "s/^#\\?greeter-session.*/greeter-session=pi-greeter/"
-if [ -e "/var/lib/AccountsService/users/$RASPI_USER" ] ; then
-	sed "/var/lib/AccountsService/users/$RASPI_USER" -i -e "s/XSession=.*/XSession=LXDE-pi-x/"
-fi
+# sed /etc/lightdm/lightdm.conf -i -e "s/^#\\?user-session.*/user-session=LXDE-pi-x/"
+# sed /etc/lightdm/lightdm.conf -i -e "s/^#\\?autologin-session.*/autologin-session=LXDE-pi-x/"
+# sed /etc/lightdm/lightdm.conf -i -e "s/^#\\?greeter-session.*/greeter-session=pi-greeter/"
+# if [ -e "/var/lib/AccountsService/users/$RASPI_USER" ] ; then
+# 	sed "/var/lib/AccountsService/users/$RASPI_USER" -i -e "s/XSession=.*/XSession=LXDE-pi-x/"
+# fi
+# TODO: needed again with non OctoPi image?
+
 
 # Install RealVNC server again. At some point in future, RealVNC will support Wayland also
 apt-get remove -y wayvnc
