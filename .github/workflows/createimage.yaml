@@ -61,12 +61,12 @@ jobs:
 
 
     - name: "Run CustoPiZer"
-      uses: OctoPrint/CustoPiZer@1.2.0
+      uses: OctoPrint/CustoPiZer@1.4.1
       with:
         workspace: "${{ github.workspace }}/build"
         scripts:  "${{ github.workspace }}/workspace/scripts"
         config: "${{ github.workspace }}/config.local"
-        environment: '{ "IMAGE_BITWIDTH": "${{ env.IMAGE_BITWIDTH }}", "RASPI_HOSTNAME": "lab-box", "RASPI_USER": "${{ github.event.inputs.default-user }}", "RASPI_PASSWORD": "${{ github.event.inputs.default-password }}", "GITHUB_ENV_SHA": "${{ github.sha }}", "GITHUB_ENV_REF_NAME": "${{ github.ref }}", "LABBOX_PYTHON_GUI_BRANCH": "${{ github.event.inputs.labbox-python-software-version }}" }'
+        environment: '{ "EDITBASE_MOUNT_SYS": "1", "IMAGE_BITWIDTH": "${{ env.IMAGE_BITWIDTH }}", "RASPI_HOSTNAME": "lab-box", "RASPI_USER": "${{ github.event.inputs.default-user }}", "RASPI_PASSWORD": "${{ github.event.inputs.default-password }}", "GITHUB_ENV_SHA": "${{ github.sha }}", "GITHUB_ENV_REF_NAME": "${{ github.ref }}", "LABBOX_PYTHON_GUI_BRANCH": "${{ github.event.inputs.labbox-python-software-version }}" }'
 
 
     - name: "Prepare release"
