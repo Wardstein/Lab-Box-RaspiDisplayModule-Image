@@ -44,21 +44,26 @@ jobs:
       run: |
         mkdir build
         cd build
-        echo "Using image width: \"${{ env.IMAGE_BITWIDTH }}\""
-        if [ "${{ env.IMAGE_BITWIDTH }}" == "32" ]
-        then
-            # Download 32bit image
-            # wget https://downloads.raspberrypi.com/raspios_armhf/images/raspios_armhf-2025-05-13/2025-05-13-raspios-bookworm-armhf.img.xz -q -O input.img.xz
-            wget https://github.com/guysoft/OctoPi/releases/download/1.1.0/octopi-bookworm-armhf-lite-1.1.0.zip -q -O input.img.xz
-        elif [ "${{ env.IMAGE_BITWIDTH }}" == "64" ] 
-        then
-            # TODO: 64 BIT IMAGE MAKES PROBLEMS WITH CustoPiZer/chroot IN THE GITHUB RUNNER. NEED TO INVESTIGATE
-            # wget https://downloads.raspberrypi.com/raspios_arm64/images/raspios_arm64-2025-05-13/2025-05-13-raspios-bookworm-arm64.img.xz -q -O input.img.xz
-            exit 1
-        else
-            exit 1
-        fi
-        unxz -f input.img.xz
+        #echo "Using image width: \"${{ env.IMAGE_BITWIDTH }}\""
+        #if [ "${{ env.IMAGE_BITWIDTH }}" == "32" ]
+        #then
+        #    # Download 32bit image
+        #    wget https://downloads.raspberrypi.com/raspios_armhf/images/raspios_armhf-2025-05-13/2025-05-13-raspios-bookworm-armhf.img.xz -q -O input.img.xz
+        #elif [ "${{ env.IMAGE_BITWIDTH }}" == "64" ] 
+        #then
+        #    # TODO: 64 BIT IMAGE MAKES PROBLEMS WITH CustoPiZer/chroot IN THE GITHUB RUNNER. NEED TO INVESTIGATE
+        #    # wget https://downloads.raspberrypi.com/raspios_arm64/images/raspios_arm64-2025-05-13/2025-05-13-raspios-bookworm-arm64.img.xz -q -O input.img.xz
+        #    exit 1
+        #else
+        #    exit 1
+        #fi
+        #unxz -f input.img.xz
+
+        wget https://github.com/guysoft/OctoPi/releases/download/1.1.0/octopi-bookworm-armhf-lite-1.1.0.zip -q -O octopi.zip
+        unzip octopi.zip
+        rm octopi.zip
+        IMAGE=$(ls *.img | head -n 1)
+        mv $IMAGE input.img
 
 
     - name: "Run CustoPiZer"
